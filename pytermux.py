@@ -1,7 +1,7 @@
 #coding=utf8
-# 手机相关的信息
-# 手机的行为
-# termux基础api的调用
+
+#------------------------------------------------------------------------------
+#region imports
 import os
 import sys
 import json
@@ -10,6 +10,8 @@ import subprocess
 import shlex
 import logging
 from logging.handlers import RotatingFileHandler
+#endregion imports
+#------------------------------------------------------------------------------
 
 logger = logging.getLogger()
 fmt = '%(asctime)-15s.%(msecs)03d[%(levelname)s]{%(filename)s,%(lineno)d} %(message)s'
@@ -24,50 +26,52 @@ logger.addHandler(stream_handler)
 logger.setLevel(logging.INFO)
 
 """
-"termux-battery-status"     
-"termux-download"
-"termux-notification-remove"
-"termux-sms-send"  
-"termux-tts-speak"
-"termux-camera-info"           
-"termux-fix-shebang"          
-"termux-open"          
-"termux-storage-get"           
-"termux-vibrate"
-"termux-camera-photo"          
-"termux-info"         
-"termux-open-url"              
-"termux-telephony-call"        
-"termux-wake-lock"
-"termux-clipboard-get"         
-"termux-infrared-frequencies"  
-"termux-reload-settings" 
-"termux-telephony-cellinfo"    
-"termux-wake-unlock"
-"termux-clipboard-set"       
-"termux-infrared-transmit"   
-"termux-setup-storage"        
-"termux-telephony-deviceinfo" 
-"termux-wifi-connectioninfo"
-"termux-contact-list"          
-"termux-location"             
-"termux-share"                
-"termux-toast"                 
-"termux-wifi-scaninfo"
-"termux-dialog"                
-"termux-notification"          
-"termux-sms-inbox"             
-"termux-tts-engines" 
+    "termux-battery-status"     
+    "termux-download"
+    "termux-notification-remove"
+    "termux-sms-send"  
+    "termux-tts-speak"
+    "termux-camera-info"           
+    "termux-fix-shebang"          
+    "termux-open"          
+    "termux-storage-get"           
+    "termux-vibrate"
+    "termux-camera-photo"          
+    "termux-info"         
+    "termux-open-url"              
+    "termux-telephony-call"        
+    "termux-wake-lock"
+    "termux-clipboard-get"         
+    "termux-infrared-frequencies"  
+    "termux-reload-settings" 
+    "termux-telephony-cellinfo"    
+    "termux-wake-unlock"
+    "termux-clipboard-set"       
+    "termux-infrared-transmit"   
+    "termux-setup-storage"        
+    "termux-telephony-deviceinfo" 
+    "termux-wifi-connectioninfo"
+    "termux-contact-list"          
+    "termux-location"             
+    "termux-share"                
+    "termux-toast"                 
+    "termux-wifi-scaninfo"
+    "termux-dialog"                
+    "termux-notification"          
+    "termux-sms-inbox"             
+    "termux-tts-engines" 
 """
 termux_temp_str  = """\
-termux-battery-status        termux-download              termux-notification-remove   termux-sms-send              termux-tts-speak
-termux-camera-info           termux-fix-shebang           termux-open                  termux-storage-get           termux-vibrate
-termux-camera-photo          termux-info                  termux-open-url              termux-telephony-call        termux-wake-lock
-termux-clipboard-get         termux-infrared-frequencies  termux-reload-settings       termux-telephony-cellinfo    termux-wake-unlock
-termux-clipboard-set         termux-infrared-transmit     termux-setup-storage         termux-telephony-deviceinfo  termux-wifi-connectioninfo
-termux-contact-list          termux-location              termux-share                 termux-toast                 termux-wifi-scaninfo
-termux-dialog                termux-notification          termux-sms-inbox             termux-tts-engines  
-"""
+    termux-battery-status        termux-download              termux-notification-remove   termux-sms-send              termux-tts-speak
+    termux-camera-info           termux-fix-shebang           termux-open                  termux-storage-get           termux-vibrate
+    termux-camera-photo          termux-info                  termux-open-url              termux-telephony-call        termux-wake-lock
+    termux-clipboard-get         termux-infrared-frequencies  termux-reload-settings       termux-telephony-cellinfo    termux-wake-unlock
+    termux-clipboard-set         termux-infrared-transmit     termux-setup-storage         termux-telephony-deviceinfo  termux-wifi-connectioninfo
+    termux-contact-list          termux-location              termux-share                 termux-toast                 termux-wifi-scaninfo
+    termux-dialog                termux-notification          termux-sms-inbox             termux-tts-engines  
+    """
+
+
 # print(termux_temp_str.split())
 res = [temp.replace('-','_').replace('termux_','') for temp in termux_temp_str.split()]
 print(res)
@@ -88,15 +92,17 @@ print(termux_cmd.camera_info)
 #     }
 #     return res
 
+#------------------------------------------------------------------------------
+
 class DictObj(object):
     def __init__(self):
         pass
     pass
-
+#------------------------------------------------------------------------------
 
 class _CacheAtrr(object):
     '''
-    the class used to chche attr values
+    the class used to cache attr values
     '''
     def __init__(self, termux_cmd, cache = True):
         self.is_cache = cache
@@ -124,8 +130,10 @@ class _CacheAtrr(object):
                     print(self.dict_info)
         except Exception as e:
             print(e)
+#------------------------------------------------------------------------------
 
 class Termux(object):
+
     battery_status = _CacheAtrr(termux_cmd.battery_status, cache=False)
     location = _CacheAtrr(termux_cmd.location, cache=False)
     camera_info = _CacheAtrr(termux_cmd.camera_info)
@@ -163,11 +171,11 @@ class Termux(object):
     
     def clipboard_get(self):
         return self.__exec(termux_cmd.clipboard_get)
-            
+
     def clipboard_set(self, content):
         cmd = "{cmd} {args}".format(cmd=termux_cmd.clipboard_set, args=content)
         return self.__exec(cmd)
-    
+
     def dialog(self,hint=None,multi=False,pwd=False,title=None):
         '''
         Show a text entry dialog.
@@ -184,7 +192,7 @@ class Termux(object):
         cmd_all = ' '.join([cmd_base,hint,title,multi,pwd])
         return self.__exec(cmd_all)
 
-    def vibrate(self,duration=1000, force=False):
+    def vibrate(self, duration=1000, force=False):
         '''
         Usage: termux-vibrate [-d duration] [-f]
         Vibrate the device.
@@ -196,20 +204,14 @@ class Termux(object):
         force = "-f " if force else ""
         cmd_all = ' '.join([cmd_base,duration,force])
         return self.__exec(cmd_all)
-
-    
-
-    
-
-        
-
+#------------------------------------------------------------------------------
 
 def main():
     t = Termux()
     # import time
     # time_before = time.time()
     # print(t.battery_status)
-    print(t.camera_info)
+    # print(t.camera_info)
     # print(t.contact_list)
     # # print(t.info)
     # print(t.location)
@@ -218,7 +220,7 @@ def main():
     # time_end = time.time()
     # print(time_end-time_before)
     # t.camera_photo(2,'b.jpg')
-    # print(t.dialog(hint='123',multi=True,pwd=True,title='hohoho'))
+    print(t.dialog(hint='123', multi=True, pwd=True, title='hohoho'))
     # print(t.vibrate(force=True))
 
 
